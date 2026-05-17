@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+<div class="main-grid">
+    <div class="articles-list">
+        {% for article in articles %}
+        <div class="article-card">
+            <div class="article-content">
+                <a href="#" class="category-badge">{{ article.category.name }}</a>
+                <h2 class="article-title">
+                    <a href="{% url 'article_detail' article.slug %}">{{ article.title }}</a>
+                </h2>
+                <div class="article-meta">
+                    <span>{{ article.author.user.username }}</span>
+                    <span>{{ article.published_at|date:"d.m.Y" }}</span>
+                    <span>Просмотров: {{ article.views }}</span>
+                </div>
+                <div class="tags">
+                    {% for tag in article.tags.all %}
+                    <a href="#" class="tag">{{ tag.name }}</a>
+                    {% endfor %}
+                </div>
+                <p class="summary">{{ article.summary|truncatewords:30 }}</p>
+                <a href="{% url 'article_detail' article.slug %}" class="read-more">Читать далее →</a>
+            </div>
+        </div>
+        {% empty %}
+        <p>Статей пока нет.</p>
+        {% endfor %}
+    </div>
+
+    <div class="sidebar">
+        <div class="sidebar-widget">
+            <h3 class="widget-title">Подписка</h3>
+            <form method="post" action="{% url 'subscribe' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="email" name="email" class="form-control" placeholder="Ваш email" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Подписаться</button>
+            </form>
+        </div>
+
+        <div class="sidebar-widget">
+            <h3 class="widget-title">Вопрос редакции</h3>
+            <form method="post" action="{% url 'ask_question' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="text" name="name" class="form-control" placeholder="Ваше имя" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" name="email" class="form-control" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <textarea name="question" class="form-control" rows="3" placeholder="Ваш вопрос" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Отправить</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

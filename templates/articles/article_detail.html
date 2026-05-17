@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block content %}
+<article class="article-detail">
+    <h1>{{ article.title }}</h1>
+    <div class="article-meta">
+        <span>Автор: {{ article.author.user.username }}</span>
+        <span>Дата: {{ article.published_at|date:"d.m.Y" }}</span>
+        <span>Просмотров: {{ article.views }}</span>
+    </div>
+    
+    {% if article.featured_image %}
+    <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" style="max-width: 100%; margin: 20px 0;">
+    {% endif %}
+    
+    <div class="article-body">
+        {{ article.content|safe }}
+    </div>
+    
+    <div class="tags">
+        {% for tag in article.tags.all %}
+        <a href="#" class="tag">{{ tag.name }}</a>
+        {% endfor %}
+    </div>
+</article>
+
+<div class="comments-section">
+    <h3>Комментарии ({{ comments.count }})</h3>
+    
+    {% for comment in comments %}
+    <div class="comment">
+        <div class="comment-author">{{ comment.author_name }}</div>
+        <div class="comment-date">{{ comment.created_at|date:"d.m.Y H:i" }}</div>
+        <div class="comment-text">{{ comment.text }}</div>
+    </div>
+    {% empty %}
+    <p>Комментариев пока нет. Будьте первым!</p>
+    {% endfor %}
+    
+    <div class="comment-form">
+        <h4>Добавить комментарий</h4>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="text" name="author_name" class="form-control" placeholder="Ваше имя" required>
+            </div>
+            <div class="form-group">
+                <input type="email" name="email" class="form-control" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <textarea name="text" class="form-control" rows="4" placeholder="Ваш комментарий" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Отправить комментарий</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
